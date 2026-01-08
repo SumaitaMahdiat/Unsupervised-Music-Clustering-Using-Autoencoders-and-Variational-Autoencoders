@@ -13,9 +13,6 @@ class MusicDataset(Dataset):
     def __getitem__(self, idx):
         return self.features[idx]
 
-# ---------------------------
-# Example usage
-# ---------------------------
 if __name__ == "__main__":
     train_dataset = MusicDataset("C:/Users/user/OneDrive/Documents/musicdata/data/features/easy/train.csv")
     valid_dataset = MusicDataset("C:/Users/user/OneDrive/Documents/musicdata/data/features/easy/valid.csv")
@@ -25,5 +22,6 @@ if __name__ == "__main__":
     print("Train dataset shape:", train_dataset.features.shape)
     print("Valid dataset shape:", valid_dataset.features.shape)
     print("Test dataset shape:", test_dataset.features.shape)
+
 
 
