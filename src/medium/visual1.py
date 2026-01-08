@@ -1,4 +1,3 @@
-# visual.py
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -6,25 +5,16 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 import umap
 
-# ---------------------------
-# Paths
-# ---------------------------
 feature_folder = r"C:/Users/user/OneDrive/Documents/musicdata/results/medium"
 output_folder = r"C:/Users/user/OneDrive/Documents/musicdata/results/medium"
 os.makedirs(output_folder, exist_ok=True)
 
-# ---------------------------
-# Load latent vectors & cluster labels
-# ---------------------------
 train_latent = pd.read_csv(os.path.join(feature_folder, "train_latent.csv"))
 train_clusters = pd.read_csv(os.path.join(output_folder, "train_clusters_kmeans.csv"))
 
 X = train_latent.drop(columns=['song_id']).values
 labels = train_clusters['cluster'].values
 
-# ---------------------------
-# Reduce to 2D for visualization
-# ---------------------------
 def reduce_dim(X, method='pca'):
     if method == 'pca':
         reducer = PCA(n_components=2)
@@ -36,11 +26,7 @@ def reduce_dim(X, method='pca'):
         raise ValueError("Unsupported method")
     return X_2d
 
-X_2d = reduce_dim(X, method='pca')  # or 'tsne'
-
-# ---------------------------
-# Plot
-# ---------------------------
+X_2d = reduce_dim(X, method='pca')  
 plt.figure(figsize=(8,6))
 for cluster in set(labels):
     idx = labels == cluster
@@ -52,11 +38,8 @@ plt.legend()
 plt.tight_layout()
 plt.savefig(os.path.join(output_folder, "latent_clusters.png"))
 plt.show()
-print("✅ Latent space plot saved.")
+print(" Latent space plot saved.")
 
-# ---------------------------
-# t-SNE visualization
-# ---------------------------
 X_2d_tsne = reduce_dim(X, method='tsne')
 plt.figure(figsize=(8,6))
 for cluster in set(labels):
@@ -69,11 +52,8 @@ plt.legend()
 plt.tight_layout()
 plt.savefig(os.path.join(output_folder, "latent_clusters_tsne.png"))
 plt.show()
-print("✅ t-SNE latent space plot saved.")
+print("t-SNE latent space plot saved.")
 
-# ---------------------------
-# UMAP visualization
-# ---------------------------
 X_2d_umap = umap.UMAP(n_components=2, random_state=42).fit_transform(X)
 plt.figure(figsize=(8,6))
 for cluster in set(labels):
