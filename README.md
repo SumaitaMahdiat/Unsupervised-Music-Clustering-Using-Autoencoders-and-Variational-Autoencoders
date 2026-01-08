@@ -1,35 +1,51 @@
 # Unsupervised Music Clustering Using Autoencoders and Variational Autoencoders
 
-This project explores deep representation learning for unsupervised music clustering. It compares traditional methods (PCA + K-Means) with deep generative models (AE, VAE, CVAE) across three tasks of increasing complexity, utilizing both audio features and lyrical embeddings.
+[![Project Status](https://img.shields.io/badge/Status-Complete-green.svg)](https://github.com/yourusername/musicdata)
+[![LaTeX](https://img.shields.io/badge/LaTeX-Report-blue.svg)](report.tex)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-yellow.svg)](requirements.txt)
+
+This project explores **deep representation learning** for unsupervised music clustering. It compares traditional methods (PCA + K-Means) with deep generative models (AE, VAE, CVAE) across three tasks of increasing complexity, utilizing both audio features and lyrical embeddings.
+
+---
 
 ## Project Overview
-- **Objective**: Group music tracks based on similarity without utilizing explicit labels.
-- **Complexity Levels**:
-    - **Easy**: Audio-only feature learning using a Variational Autoencoder (VAE).
-    - **Medium**: Multimodal learning by combining audio features and lyrics embeddings using an Autoencoder (AE).
-    - **Hard**: Advanced feature learning using Conditional Variational Autoencoders (CVAE) and multiple clustering algorithms.
 
-## Project Structure
+The system learns compact latent representations from music data, applies multiple clustering algorithms, evaluates cluster quality using standard metrics, and visualizes latent spaces and reconstruction behavior.
+
+### Complexity Levels
+
+*   **Easy Task**: Audio-only feature learning using a **Variational Autoencoder (VAE)**.
+*   **Medium Task**: Multimodal learning combining audio features and lyric embeddings using a **Multimodal VAE (ConvVAE)**.
+*   **Hard Task**: Advanced feature learning using **Conditional Variational Autoencoders (CVAE)** with genre conditioning.
+
+---
+
+## Repository Structure
+
 ```text
 musicdata/
-├── data/               # Preprocessed audio features, lyrics embeddings, and labels
+├── data/               # Raw and preprocessed audio/lyrics data
 ├── src/                # Source code
-│   ├── easy/           # VAE implementation and audio clustering
-│   ├── medium/         # Multimodal AE implementation
-│   └── hard/           # CVAE and advanced clustering techniques
+│   ├── easy/           # Audio-only VAE pipeline
+│   │   ├── separate_dataset.py  # PREPARATION: Audio preprocessing & split
+│   │   ├── vae.py               # VAE Architecture
+│   │   ├── trainer.py           # VAE Training
+│   │   └── ...
+│   ├── medium/         # Multimodal VAE pipeline
+│   │   ├── embed.py             # PREPARATION: Lyrics embedding
+│   │   ├── convae.py            # Multimodal VAE Architecture
+│   │   └── ...
+│   └── hard/           # CVAE and advanced clustering
+│       ├── final_dataset.py     # PREPARATION: Unified dataset processing
+│       ├── cvae.py              # CVAE Architecture
+│       └── ...
 ├── results/            # Performance metrics and visualization plots
-├── visuals.py          # Unified script for evaluation and plotting
-├── report.tex          # Scientific report detailing methodology and results
+├── visuals.py          # Unified evaluation & plotting script
+├── report.tex          # Scientific report (LaTeX)
 └── README.md           # Project documentation
 ```
 
-## Key Technologies
-- **Deep Learning**: PyTorch (VAE, AE, CVAE)
-- **Machine Learning**: Scikit-learn (K-Means, Spectral Clustering, Agglomerative Clustering, PCA)
-- **Visualization**: Matplotlib, Seaborn, t-SNE, UMAP
-- **Data Handling**: Pandas, NumPy
-
-
+---
 ## Scripts Overview
 
 ### Root Directory
@@ -58,21 +74,52 @@ Implements advanced conditioning and multiple clustering strategies.
 - `cvae.py`: Implements the Conditional Variational Autoencoder (CVAE).
 - `trainer.py`: Trains the CVAE using genre labels as conditional inputs.
 - `clustering.py`: Experiments with Spectral and Agglomerative clustering on the CVAE embeddings.
-- `dataset.py` & `final_dataset.py`: Handle complex data loading, genre mapping, and preprocessing for the hard task and medium task.
+- `dataset.py` & `final_dataset.py`: Handle complex data loading, genre mapping, and preprocessing for the hard task.
 - `baseline.py`: Implements baseline models (like PCA or standard KMeans) for comparison.
 - `evaluate.py`: Standalone evaluation script for hard task metrics.
 - `reconstruct.py`: Visualizes the model's ability to reconstruct audio features from the latent space.
 - `visual1.py`, `visual2.py`, & `visual3.py`: Comprehensive visualization scripts for analyzing genre-stratified clusters and latent space properties.
 
-## Usage
+## Installation & Setup
 
-### 1. Installation
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/yourusername/musicdata.git
+    cd musicdata
+    ```
+
+2.  **Install dependencies**:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+---
+
+## Usage Instructions
+
+### 1. Data Preparation (CRITICAL)
+
+Before training the models, you must prepare the datasets for each task level.
+
+#### **Easy Task**
+To extract MFCC features and split the audio data for the Easy task:
 ```bash
-pip install -r requirements.txt
+python src/easy/separate_dataset.py
 ```
 
+#### **Medium & Hard Tasks**
+To process the unified dataset (audio + lyrics + genres) and generate embeddings:
+1.  **Extract Features**:
+    ```bash
+    python src/hard/final_dataset.py
+    ```
+2.  **Generate Lyrics Embeddings**:
+    ```bash
+    python src/medium/embed.py
+    ```
+
 ### 2. Training Models
-You can train each level independently:
+Each task can be trained independently once the data is prepared:
 ```bash
 python src/easy/trainer.py
 python src/medium/trainer.py
@@ -85,15 +132,31 @@ To generate comparison plots and calculate quantitative metrics across all tasks
 python visuals.py
 ```
 
+---
+
 ## Quantitative Results Highlights
+
+The following table summarizes the performance of various methods across the three tasks:
 
 | Task / Method | Silhouette | CH Index | ARI | NMI | Purity |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Easy** (VAE + KMeans) | 0.102 | 380.7 | - | - | - |
-| **Medium** (AE + KMeans) | 0.031 | 407.7 | -0.017 | 0.072 | 0.931 |
-| **Hard** (CVAE + KMeans) | 0.044 | - | 0.032 | 0.059 | 0.557 |
-| **Hard** (AE + KMeans) | 0.362 | - | 0.008 | 0.023 | 0.488 |
+| **Easy** (PCA + KMeans) | 0.196 | 1901.8 | - | - | - |
+| **Medium** (PCA + KMeans) | 0.179 | 1331.0 | 0.005 | 0.022 | 0.473 |
+| **Hard** (CVAE + KMeans) | -0.018 | 1051.1 | 0.032 | 0.059 | 0.558 |
+| **Hard** (AE + KMeans) | 0.144 | 2755.3 | 0.008 | 0.023 | 0.490 |
+| **Hard** (PCA + KMeans) | 0.184 | 3131.2 | 0.006 | 0.022 | 0.476 |
+
+---
+
+## Visualizations
+The project generates several types of visualizations saved in the `results/` directory:
+- **Latent Space**: t-SNE and UMAP projections of learned embeddings.
+- **Metric Comparison**: Bar plots for Silhouette, ARI, NMI, and Purity across tasks.
+- **Reconstruction**: Original vs. Reconstructed audio features (Hard task).
+
+---
 
 ## Author
-Sumaita Mahdiat
-Department of CSE, BRAC University  
+**Sumaita Mahdiat**  
+Department of Computer Science and Engineering  
+BRAC University
