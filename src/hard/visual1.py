@@ -6,25 +6,16 @@ import os
 import torch
 from torch import nn
 
-# ---------------------------
-# Paths
-# ---------------------------
 output_folder = r"C:/Users/user/OneDrive/Documents/musicdata/results/hard"
 plots_folder = os.path.join(output_folder, "plots")
 os.makedirs(plots_folder, exist_ok=True)
 
-# ---------------------------
-# Load data
-# ---------------------------
 latent_space = np.load(f"{output_folder}/latent_space.npy")
 clusters     = np.load(f"{output_folder}/clusters.npy")
 y_train      = np.load(f"{output_folder}/y_train.npy")
 audio_train  = pd.read_pickle(f"{output_folder}/audio_train.pkl")
 X_train      = np.load(f"{output_folder}/X_train.npy")
 
-# ---------------------------
-# CVAE model setup
-# ---------------------------
 input_dim     = X_train.shape[1]
 latent_dim    = 32
 condition_dim = 1
@@ -64,9 +55,6 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 model = CVAE(input_dim, latent_dim, condition_dim).to(device)
 model.load_state_dict(torch.load(f"{output_folder}/cvae_model_trained.pth", map_location=device))
 
-# ---------------------------
-# Forward pass for first 5 samples
-# ---------------------------
 X_train_tensor = torch.tensor(X_train[:5], dtype=torch.float32).to(device)
 c_train_tensor = torch.tensor(y_train[:5].reshape(-1,1), dtype=torch.float32).to(device)
 
@@ -76,13 +64,9 @@ with torch.no_grad():
 recon_x     = recon_x.cpu().numpy()
 original_x  = X_train_tensor.cpu().numpy()
 
-# ---------------------------
-# t-SNE latent 2D
-# ---------------------------
 tsne = TSNE(n_components=2, random_state=42, perplexity=30)
 latent_2d = tsne.fit_transform(latent_space)
 
-# Helper to save t-SNE plots
 def save_tsne_plot(latent_2d, colors, title, filename):
     plt.figure(figsize=(8,6))
     scatter = plt.scatter(latent_2d[:,0], latent_2d[:,1], c=colors, cmap='tab10', alpha=0.7)
@@ -94,13 +78,9 @@ def save_tsne_plot(latent_2d, colors, title, filename):
     plt.savefig(os.path.join(plots_folder, filename), dpi=300)
     plt.close()
 
-# Save t-SNE plots
 save_tsne_plot(latent_2d, clusters, "CVAE Latent Space Clustering", "cvae_latent_clusters.png")
 save_tsne_plot(latent_2d, y_train, "CVAE Latent Space Colored by Genre", "cvae_latent_genres.png")
 
-# ---------------------------
-# Helper to save reconstruction plots
-# ---------------------------
 def save_reconstruction_plot(original, reconstructed, sample_idx, feature_type):
     plt.figure(figsize=(8,4))
     plt.plot(original, label=f"Original {feature_type}")
@@ -111,13 +91,11 @@ def save_reconstruction_plot(original, reconstructed, sample_idx, feature_type):
     plt.savefig(os.path.join(plots_folder, f"{feature_type.lower()}_reconstruction_sample{sample_idx+1}.png"), dpi=300)
     plt.close()
 
-# First sample reconstruction
 save_reconstruction_plot(original_x[0][:audio_train.shape[1]], 
                          recon_x[0][:audio_train.shape[1]], 0, "Audio")
 save_reconstruction_plot(original_x[0][audio_train.shape[1]:], 
                          recon_x[0][audio_train.shape[1]:], 0, "Latent")
 
-# All 5 samples
 for i in range(5):
     save_reconstruction_plot(original_x[i][:audio_train.shape[1]], 
                              recon_x[i][:audio_train.shape[1]], i, "Audio")
@@ -125,3 +103,4 @@ for i in range(5):
                              recon_x[i][audio_train.shape[1]:], i, "Latent")
 
 print(" All CVAE latent and reconstruction plots saved in:", plots_folder)
+
