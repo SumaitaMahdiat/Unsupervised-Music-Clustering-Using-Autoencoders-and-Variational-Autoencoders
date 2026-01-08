@@ -20,7 +20,7 @@ The system learns compact latent representations from music data, applies multip
 
 ---
 
-## Repository Structure
+## Repository/Folder Structure
 
 ```text
 musicdata/
