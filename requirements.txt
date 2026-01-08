@@ -1,0 +1,21 @@
+# Core Deep Learning & Data Processing
+torch               # Deep learning framework for VAE, AE, and CVAE
+pandas              # Data manipulation and CSV loading
+numpy               # Numerical operations
+scipy               # Scientific computing and advanced metrics
+
+# Machine Learning & Clustering
+scikit-learn        # KMeans, Spectral Clustering, Agglomerative Clustering, and metrics
+umap-learn          # UMAP dimensionality reduction for visualization
+
+# Visualization
+matplotlib          # Core plotting library
+seaborn             # Statistical data visualization
+
+# Audio & Text Processing
+librosa             # Audio feature extraction and processing
+sentence-transformers # Generating text embeddings for lyrics (Medium task)
+
+# Utilities
+tqdm                # Progress bars for training and processing
+jupyter             # To run exploratory notebooks (.ipynb)
