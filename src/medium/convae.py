@@ -1,4 +1,3 @@
-# convae.py
 import os
 import torch
 import torch.nn as nn
@@ -59,7 +58,6 @@ class ConvVAE(nn.Module):
             nn.Linear(128, 64),
             nn.ReLU()
         )
-        # Latent
         self.fc_mu = nn.Linear(128, latent_dim)
         self.fc_logvar = nn.Linear(128, latent_dim)
         self.decoder = nn.Sequential(
