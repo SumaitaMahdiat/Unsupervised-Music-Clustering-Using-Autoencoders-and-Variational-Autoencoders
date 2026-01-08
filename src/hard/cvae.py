@@ -2,18 +2,12 @@ import torch
 from torch import nn
 import numpy as np
 
-# Paths
 output_folder = r"C:/Users/user/OneDrive/Documents/musicdata/results/hard"
-
-# Load data
 X_train = np.load(f"{output_folder}/X_train.npy")
+input_dim = X_train.shape[1]   
+latent_dim = 32                
+condition_dim = 1              
 
-# Parameters
-input_dim = X_train.shape[1]   # from Script 1
-latent_dim = 32                # size of latent space (tuneable)
-condition_dim = 1              # genre label
-
-# CVAE Architecture
 class CVAE(nn.Module):
     def __init__(self, input_dim, latent_dim, condition_dim):
         super().__init__()
@@ -29,7 +23,6 @@ class CVAE(nn.Module):
         self.relu = nn.ReLU()
     
     def encode(self, x, c):
-        # x: input, c: condition (genre)
         h = self.relu(self.fc1(torch.cat([x, c], dim=1)))
         mu = self.fc2_mu(h)
         logvar = self.fc2_logvar(h)
@@ -53,6 +46,4 @@ class CVAE(nn.Module):
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model = CVAE(input_dim, latent_dim, condition_dim).to(device)
 print(model)
-
-# Save model
 torch.save(model.state_dict(), f"{output_folder}/cvae_model.pth")
