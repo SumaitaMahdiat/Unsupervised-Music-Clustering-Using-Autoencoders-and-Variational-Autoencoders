@@ -1,24 +1,15 @@
-# ---------------------------
-# Script 7: Reconstruction Examples
-# ---------------------------
-
 import torch
 import numpy as np
 from torch import nn
 
-# Paths
 output_folder = r"C:/Users/user/OneDrive/Documents/musicdata/results/hard"
-
-# Load data
 X_train = np.load(f"{output_folder}/X_train.npy")
 y_train = np.load(f"{output_folder}/y_train.npy")
 
-# Parameters
 input_dim = X_train.shape[1]
 latent_dim = 32
 condition_dim = 1
 
-# CVAE Architecture
 class CVAE(nn.Module):
     def __init__(self, input_dim, latent_dim, condition_dim):
         super().__init__()
@@ -34,7 +25,6 @@ class CVAE(nn.Module):
         self.relu = nn.ReLU()
     
     def encode(self, x, c):
-        # x: input, c: condition (genre)
         h = self.relu(self.fc1(torch.cat([x, c], dim=1)))
         mu = self.fc2_mu(h)
         logvar = self.fc2_logvar(h)
@@ -55,16 +45,13 @@ class CVAE(nn.Module):
         recon = self.decode(z, c)
         return recon, mu, logvar
 
-# Load trained model
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model = CVAE(input_dim, latent_dim, condition_dim).to(device)
 model.load_state_dict(torch.load(f"{output_folder}/cvae_model_trained.pth"))
 
-# Convert data to tensors
 X_train_tensor = torch.tensor(X_train, dtype=torch.float32).to(device)
 c_train_tensor = torch.tensor(y_train.reshape(-1,1), dtype=torch.float32).to(device)
 
-# Select first 5 samples for demonstration
 sample_x = X_train_tensor[:5].to(device)
 sample_c = c_train_tensor[:5].to(device)
 
@@ -72,13 +59,9 @@ model.eval()
 with torch.no_grad():
     recon_x, mu, logvar = model(sample_x, sample_c)
 
-# Move to CPU for inspection
 recon_x = recon_x.cpu().numpy()
 original_x = sample_x.cpu().numpy()
 
-# ---------------------------
-# Print original vs reconstructed
-# ---------------------------
 for i in range(5):
     print(f"\nSample {i+1}:")
     print("Original (first 10 dims):", np.round(original_x[i][:10], 3))
