@@ -58,7 +58,7 @@ Implements advanced conditioning and multiple clustering strategies.
 - `cvae.py`: Implements the Conditional Variational Autoencoder (CVAE).
 - `trainer.py`: Trains the CVAE using genre labels as conditional inputs.
 - `clustering.py`: Experiments with Spectral and Agglomerative clustering on the CVAE embeddings.
-- `dataset.py` & `final_dataset.py`: Handle complex data loading, genre mapping, and preprocessing for the hard task.
+- `dataset.py` & `final_dataset.py`: Handle complex data loading, genre mapping, and preprocessing for the hard task and medium task.
 - `baseline.py`: Implements baseline models (like PCA or standard KMeans) for comparison.
 - `evaluate.py`: Standalone evaluation script for hard task metrics.
 - `reconstruct.py`: Visualizes the model's ability to reconstruct audio features from the latent space.
